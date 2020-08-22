@@ -17,13 +17,23 @@ class FlagsViewController: UIViewController {
 	
 	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 	// MARK: - Properties
+	typealias FlagsDataSource = UICollectionViewDiffableDataSource<Int, States>
 	var states = States.allCases
+	lazy var dataSource: FlagsDataSource = {
+		let dataSource = FlagsDataSource(collectionView: collectionView) { collectionView, indexPath, state -> UICollectionViewCell? in
+			guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FlagCollectionViewCell.reuseIdentifier, for: indexPath) as? FlagCollectionViewCell else { fatalError("Unable to dequeue a cell for identifier \(FlagCollectionViewCell.reuseIdentifier)") }
+			let flagImage = UIImage(named: state.rawValue)
+			cell.imageView.image = flagImage
+			return cell
+		}
+		return dataSource
+	}()
 	
 	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 	// MARK: - View Controller Life Cycle
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		collectionView.dataSource = self
+		collectionView.dataSource = dataSource
 	}
 	
 	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -31,18 +41,10 @@ class FlagsViewController: UIViewController {
 	@IBAction func changeSorting(_ sender: UISegmentedControl) {
 		
 	}
-}
-
-extension FlagsViewController: UICollectionViewDataSource {
-	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		states.count
-	}
 	
-	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FlagCollectionViewCell.reuseIdentifier, for: indexPath) as? FlagCollectionViewCell else { fatalError("Unable to dequeue a cell for identifier \(FlagCollectionViewCell.reuseIdentifier)") }
-		let state = states[indexPath.item]
-		let flagImage = UIImage(named: state.rawValue)
-		cell.imageView.image = flagImage
-		return cell
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+	// MARK: - Private Methods
+	private func sortDataSource() {
+		
 	}
 }
